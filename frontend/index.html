@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>⚓ MAB Pirates — Treasure Hunt Tournament</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=IM+Fell+English:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:    #0a0e1a;
+  --deep:    #0d1426;
+  --plank:   #1a1206;
+  --gold:    #d4a017;
+  --gold2:   #f0c040;
+  --copper:  #b87333;
+  --rust:    #8b3a1a;
+  --fog:     #c8b89a;
+  --parchment: #f2e8c9;
+  --jade:    #1a4a3a;
+  --blood:   #8b0000;
+  --wave:    #0e2a4a;
+  --success: #2a7a3a;
+  --danger:  #7a1a1a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--fog);
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 17px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── Animated ocean background ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(14,42,74,0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(10,20,40,0.8) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0e1a 0%, #0d1a2e 40%, #0a1520 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Stars */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 10%, rgba(212,160,23,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 5%,  rgba(240,192,64,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 8%,  rgba(212,160,23,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 3%,  rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(2px 2px at 90% 12%, rgba(240,192,64,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 20%,  rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 15%, rgba(212,160,23,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 18%, rgba(255,255,255,0.3) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrapper { position: relative; z-index: 1; }
+
+/* ─── Header ─── */
+.site-header {
+  text-align: center;
+  padding: 48px 24px 32px;
+  position: relative;
+}
+
+.site-header .skull { font-size: 3rem; display: block; margin-bottom: 8px; animation: sway 4s ease-in-out infinite; }
+@keyframes sway { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
+
+.site-title {
+  font-family: 'Pirata One', cursive;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  color: var(--gold2);
+  text-shadow: 0 0 40px rgba(212,160,23,0.5), 3px 3px 0 var(--rust);
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.site-subtitle {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--copper);
+  font-size: 1.1rem;
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+
+.divider {
+  width: 100%;
+  max-width: 700px;
+  margin: 20px auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--copper), var(--gold), transparent);
+}
+
+/* ─── Nav ─── */
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 16px 16px;
+}
+
+.nav-btn {
+  font-family: 'Pirata One', cursive;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  padding: 10px 24px;
+  border: 1.5px solid var(--gold);
+  background: rgba(212,160,23,0.08);
+  color: var(--gold);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+/* ─── Main sections ─── */
+main { max-width: 1100px; margin: 0 auto; padding: 0 20px 80px; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+/* ─── Cards ─── */
+.card {
+  background: rgba(13,20,38,0.8);
+  border: 1px solid rgba(212,160,23,0.25);
+  border-radius: 4px;
+  padding: 28px;
+  margin-bottom: 24px;
+  position: relative;
+  backdrop-filter: blur(4px);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.card-title {
+  font-family: 'Pirata One', cursive;
+  font-size: 1.5rem;
+  color: var(--gold2);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ─── Leaderboard ─── */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+.leaderboard-table th {
+  font-family: 'Pirata One', cursive;
+  color: var(--gold);
+  border-bottom: 1px solid rgba(212,160,23,0.3);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: normal;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+.leaderboard-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(212,160,23,0.08);
+  color: var(--fog);
+}
+.leaderboard-table tr:hover td {
+  background: rgba(212,160,23,0.06);
+  cursor: pointer;
+}
+.rank-1 td:first-child { color: var(--gold2); font-family: 'Pirata One', cursive; font-size: 1.1rem; }
+.rank-2 td:first-child { color: #c0c0c0; }
+.rank-3 td:first-child { color: var(--copper); }
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 2px;
+  font-size: 0.8rem;
+  font-family: 'IM Fell English', serif;
+}
+.badge-success { background: rgba(42,122,58,0.3); border: 1px solid rgba(42,122,58,0.5); color: #6fbe7f; }
+.badge-error   { background: rgba(122,26,26,0.3); border: 1px solid rgba(122,26,26,0.5); color: #e08080; }
+.badge-pending { background: rgba(42,80,140,0.3); border: 1px solid rgba(42,80,140,0.5); color: #80a8e0; }
+
+/* ─── Upload form ─── */
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block;
+  font-family: 'IM Fell English', serif;
+  color: var(--gold);
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+.form-input {
+  width: 100%;
+  background: rgba(10,14,26,0.8);
+  border: 1px solid rgba(212,160,23,0.3);
+  color: var(--fog);
+  padding: 10px 14px;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  border-radius: 2px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--gold); }
+
+.file-drop {
+  border: 2px dashed rgba(212,160,23,0.3);
+  border-radius: 4px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(10,14,26,0.4);
+}
+.file-drop:hover, .file-drop.dragover {
+  border-color: var(--gold);
+  background: rgba(212,160,23,0.06);
+}
+.file-drop-icon { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+.file-drop p { color: var(--copper); font-style: italic; }
+.file-drop .file-name { color: var(--gold2); font-weight: 600; margin-top: 8px; }
+
+.btn-primary {
+  font-family: 'Pirata One', cursive;
+  font-size: 1.15rem;
+  letter-spacing: 1.5px;
+  padding: 14px 36px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--copper) 100%);
+  color: var(--navy);
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+  width: 100%;
+  margin-top: 8px;
+}
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,160,23,0.3); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ─── Progress / Status ─── */
+.progress-bar-wrap {
+  background: rgba(10,14,26,0.8);
+  border: 1px solid rgba(212,160,23,0.2);
+  border-radius: 2px;
+  height: 12px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  transition: width 0.3s;
+  border-radius: 2px;
+}
+
+.status-box {
+  padding: 16px 20px;
+  border-radius: 4px;
+  margin-top: 16px;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+}
+.status-box.success { background: rgba(42,122,58,0.15); border: 1px solid rgba(42,122,58,0.4); color: #8fd0a0; }
+.status-box.error   { background: rgba(139,0,0,0.15);   border: 1px solid rgba(139,0,0,0.5);   color: #e08080; }
+.status-box.info    { background: rgba(14,42,74,0.4);    border: 1px solid rgba(42,80,140,0.4); color: #80a8e0; }
+
+/* ─── Chest grid ─── */
+.chest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.chest-card {
+  background: rgba(26,18,6,0.7);
+  border: 1px solid rgba(184,115,51,0.3);
+  border-radius: 4px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.chest-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.chest-icon { font-size: 2.4rem; margin-bottom: 10px; display: block; }
+.chest-name { font-family: 'Pirata One', cursive; color: var(--gold2); font-size: 1.05rem; margin-bottom: 6px; }
+.chest-desc { font-size: 0.85rem; color: var(--copper); font-style: italic; line-height: 1.4; }
+.chest-index { font-size: 0.75rem; color: rgba(212,160,23,0.4); margin-top: 8px; font-family: monospace; }
+
+/* ─── Charts ─── */
+.chart-wrap { width: 100%; height: 260px; position: relative; margin-top: 12px; }
+canvas { width: 100% !important; }
+
+/* ─── Run result ─── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.stat-box {
+  background: rgba(26,18,6,0.5);
+  border: 1px solid rgba(184,115,51,0.25);
+  border-radius: 4px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-value { font-family: 'Pirata One', cursive; font-size: 1.8rem; color: var(--gold2); }
+.stat-label { font-size: 0.8rem; color: var(--copper); margin-top: 4px; font-style: italic; }
+
+/* ─── Run history list ─── */
+.run-item {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(212,160,23,0.08);
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.run-item:hover { background: rgba(212,160,23,0.06); }
+.run-gold { font-family: 'Pirata One', cursive; color: var(--gold2); font-size: 1.1rem; min-width: 90px; }
+.run-meta { flex: 1; font-size: 0.85rem; color: var(--copper); }
+.run-date { font-size: 0.8rem; color: rgba(200,184,154,0.5); margin-left: auto; }
+
+/* ─── Chest arm chart bars ─── */
+.arm-bar-wrap { margin-top: 12px; }
+.arm-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 0.82rem; }
+.arm-bar-label { width: 150px; color: var(--copper); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+.arm-bar-bg { flex: 1; height: 16px; background: rgba(10,14,26,0.8); border-radius: 2px; border: 1px solid rgba(212,160,23,0.1); }
+.arm-bar-fill { height: 100%; background: linear-gradient(90deg, var(--rust), var(--gold)); border-radius: 2px; transition: width 0.4s; }
+.arm-bar-count { width: 50px; text-align: right; color: var(--fog); }
+
+/* ─── Spinner ─── */
+.spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(212,160,23,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Empty state ─── */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--copper); font-style: italic; }
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; display: block; opacity: 0.5; }
+
+/* ─── Toast ─── */
+#toast {
+  position: fixed;
+  bottom: 30px; right: 30px;
+  background: rgba(26,18,6,0.95);
+  border: 1px solid var(--gold);
+  color: var(--fog);
+  padding: 14px 22px;
+  border-radius: 4px;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  transform: translateX(200px);
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 9999;
+  max-width: 320px;
+}
+#toast.show { transform: translateX(0); opacity: 1; }
+
+/* ─── Modal ─── */
+.modal-bg {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-bg.open { display: flex; }
+.modal {
+  background: var(--deep);
+  border: 1px solid rgba(212,160,23,0.4);
+  border-radius: 6px;
+  padding: 32px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 14px; right: 18px;
+  background: none; border: none;
+  color: var(--copper); font-size: 1.4rem;
+  cursor: pointer;
+  font-family: 'Pirata One', cursive;
+}
+.modal-close:hover { color: var(--gold); }
+
+/* ─── Code snippet ─── */
+.code-hint {
+  background: rgba(10,14,26,0.9);
+  border: 1px solid rgba(212,160,23,0.2);
+  border-radius: 4px;
+  padding: 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.82rem;
+  color: #b0d0b0;
+  white-space: pre;
+  overflow-x: auto;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--navy); }
+::-webkit-scrollbar-thumb { background: rgba(212,160,23,0.3); border-radius: 3px; }
+
+/* ─── Rope decoration ─── */
+.rope-divider {
+  text-align: center;
+  color: rgba(184,115,51,0.4);
+  font-size: 0.9rem;
+  letter-spacing: 4px;
+  margin: 8px 0 20px;
+}
+
+/* Cumulative gold chart line */
+.reward-chart-wrap { width: 100%; height: 200px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="skull">☠️</span>
+  <h1 class="site-title">MAB Pirates</h1>
+  <p class="site-subtitle">— The Treasure Hunt Tournament —</p>
+  <div class="divider"></div>
+  <p style="color:var(--copper);font-style:italic;font-size:0.95rem;">
+    8 enchanted chests, 1000 pulls, one captain claims the most gold.
+  </p>
+</header>
+
+<!-- NAV -->
+<nav>
+  <button class="nav-btn active" onclick="showSection('leaderboard')">⚓ Leaderboard</button>
+  <button class="nav-btn" onclick="showSection('upload')">🗺️ Submit Code</button>
+  <button class="nav-btn" onclick="showSection('profile')">🧭 My Voyages</button>
+  <button class="nav-btn" onclick="showSection('chests')">💰 The Chests</button>
+  <button class="nav-btn" onclick="showSection('guide')">📜 Ship's Guide</button>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════
+     LEADERBOARD
+══════════════════════════════════════════════════ -->
+<section id="leaderboard" class="section active">
+  <div class="card">
+    <div class="card-title">⚔️ Hall of Legends</div>
+    <p style="color:var(--copper);font-style:italic;margin-bottom:20px;font-size:0.95rem;">
+      Best run per captain. Only victorious voyages are counted.
+    </p>
+    <div id="lb-content">
+      <div class="empty-state"><span class="empty-icon">🌊</span>Loading the hall of legends...</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     UPLOAD
+══════════════════════════════════════════════════ -->
+<section id="upload" class="section">
+  <div class="card">
+    <div class="card-title">🗺️ Chart Your Course</div>
+    <p style="color:var(--copper);font-style:italic;margin-bottom:24px;">
+      Submit your <code style="color:var(--gold2)">BanditAgent</code> to plunder these shores.
+      Your bot will sail a horizon of <strong style="color:var(--gold2)">1,000 pulls</strong>.
+    </p>
+
+    <div class="form-group">
+      <label class="form-label">⚓ Captain's Name</label>
+      <input class="form-input" id="upload-name" type="text" placeholder="e.g. Captain Blackbeard" autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">🔑 Crew ID (your student/roll number)</label>
+      <input class="form-input" id="upload-id" type="text" placeholder="e.g. CS21B042" autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">📜 Your Python Script (.py)</label>
+      <div class="file-drop" id="file-drop" onclick="document.getElementById('file-input').click()">
+        <span class="file-drop-icon">🏴‍☠️</span>
+        <p>Drop your <code>.py</code> file here, or click to browse</p>
+        <p class="file-name" id="file-chosen">No file chosen</p>
+      </div>
+      <input type="file" id="file-input" accept=".py" style="display:none" onchange="fileChosen(this)"/>
+    </div>
+
+    <button class="btn-primary" id="upload-btn" onclick="submitCode()">⚓ Set Sail &amp; Run Evaluation</button>
+    <div id="upload-status"></div>
+  </div>
+
+  <!-- Result card (shown after run) -->
+  <div class="card" id="result-card" style="display:none">
+    <div class="card-title" id="result-title">📊 Voyage Report</div>
+    <div id="result-body"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     PROFILE
+══════════════════════════════════════════════════ -->
+<section id="profile" class="section">
+  <div class="card">
+    <div class="card-title">🧭 My Voyages</div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+      <input class="form-input" id="profile-id" type="text" placeholder="Enter your Crew ID" style="flex:1;min-width:160px"/>
+      <button class="nav-btn" onclick="loadProfile()" style="white-space:nowrap">Load Log</button>
+    </div>
+    <div id="profile-content">
+      <div class="empty-state"><span class="empty-icon">🧭</span>Enter your Crew ID to see your voyages</div>
+    </div>
+  </div>
+  <div class="card" id="run-detail-card" style="display:none">
+    <div class="card-title" id="run-detail-title">📈 Run Detail</div>
+    <div id="run-detail-body"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     CHESTS
+══════════════════════════════════════════════════ -->
+<section id="chests" class="section">
+  <div class="card">
+    <div class="card-title">💰 The Eight Enchanted Chests</div>
+    <p style="color:var(--copper);font-style:italic;margin-bottom:20px;font-size:0.95rem;">
+      Each chest hides its secrets — your algorithm must discover which holds the most gold.
+      Arm indices run from <code style="color:var(--gold2)">0</code> to <code style="color:var(--gold2)">7</code>.
+    </p>
+    <div class="chest-grid" id="chest-grid">
+      <div class="empty-state"><span class="empty-icon">🔑</span>Loading...</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     GUIDE
+══════════════════════════════════════════════════ -->
+<section id="guide" class="section">
+  <div class="card">
+    <div class="card-title">📜 The Pirate's Code</div>
+    <p style="color:var(--fog);line-height:1.8;margin-bottom:20px;">
+      Your Python file must define a class called <code style="color:var(--gold2)">BanditAgent</code>
+      with exactly three methods. The evaluator will instantiate it, then call
+      <code style="color:var(--gold2)">select_arm()</code> and <code style="color:var(--gold2)">update()</code>
+      alternately for 1,000 rounds.
+    </p>
+    <div class="code-hint">class BanditAgent:
+    def __init__(self, n_arms: int):
+        """
+        Called once at the start.
+        n_arms = 8  (the number of treasure chests)
+        """
+        self.n_arms = n_arms
+        # initialise your data structures here
+
+    def select_arm(self) -> int:
+        """
+        Called every round. Return an integer in [0, n_arms-1].
+        This is the chest index your bot will open.
+        """
+        raise NotImplementedError
+
+    def update(self, arm: int, reward: float):
+        """
+        Called right after select_arm() with the gold you received.
+        Use this to update your estimates.
+        """
+        raise NotImplementedError
+</div>
+    <br/>
+    <div class="card-title" style="font-size:1.2rem;">⚓ Example: ε-Greedy</div>
+    <div class="code-hint">import numpy as np
+
+class BanditAgent:
+    def __init__(self, n_arms):
+        self.n_arms  = n_arms
+        self.counts  = np.zeros(n_arms)
+        self.values  = np.zeros(n_arms)
+        self.epsilon = 0.1
+
+    def select_arm(self):
+        if np.random.random() < self.epsilon:
+            return np.random.randint(self.n_arms)
+        return int(np.argmax(self.values))
+
+    def update(self, arm, reward):
+        self.counts[arm] += 1
+        n = self.counts[arm]
+        self.values[arm] += (reward - self.values[arm]) / n
+</div>
+    <br/>
+    <div style="background:rgba(139,0,0,0.1);border:1px solid rgba(139,0,0,0.3);padding:16px;border-radius:4px;color:var(--fog);font-size:0.9rem;line-height:1.8;">
+      <strong style="color:var(--gold)">⚠️ Rules of the Sea:</strong><br/>
+      • Timeout: 60 seconds total execution — slow code walks the plank.<br/>
+      • No file I/O, network calls, or mischief during evaluation.<br/>
+      • <code>select_arm()</code> must return a valid integer in [0, 7].<br/>
+      • You may submit multiple times — only your best score counts.<br/>
+      • Evaluation uses a fixed random seed — fair winds for all.
+    </div>
+  </div>
+</section>
+
+</main>
+</div><!-- /wrapper -->
+
+<!-- Run detail modal -->
+<div class="modal-bg" id="run-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ─── API base ───────────────────────────────────────────────────────────────
+const API = '';  // same origin
+
+// ─── Navigation ─────────────────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'leaderboard') loadLeaderboard();
+  if (name === 'chests') loadChests();
+}
+
+// ─── Toast ───────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ─── Leaderboard ─────────────────────────────────────────────────────────────
+async function loadLeaderboard() {
+  const el = document.getElementById('lb-content');
+  el.innerHTML = `<div class="empty-state"><span class="spinner"></span> Consulting the oracle...</div>`;
+  const res = await fetch(`${API}/api/leaderboard`);
+  const data = await res.json();
+  if (!data.length) {
+    el.innerHTML = `<div class="empty-state"><span class="empty-icon">🌊</span>No captains have sailed yet. Be the first!</div>`;
+    return;
+  }
+  const medals = ['🥇','🥈','🥉'];
+  el.innerHTML = `
+    <table class="leaderboard-table">
+      <thead><tr>
+        <th>Rank</th>
+        <th>Captain</th>
+        <th>Best Gold ☠️</th>
+        <th>Best Regret</th>
+        <th>Runs</th>
+        <th>Last Voyage</th>
+      </tr></thead>
+      <tbody>
+        ${data.map((r,i) => `
+          <tr class="rank-${i+1}" onclick="loadProfileById('${r.student_id}')">
+            <td>${medals[i] || '#'+(i+1)}</td>
+            <td><strong style="color:var(--fog)">${esc(r.student_name)}</strong><br>
+                <small style="color:rgba(200,184,154,0.5)">${esc(r.student_id)}</small></td>
+            <td><span style="font-family:'Pirata One',cursive;color:var(--gold2);font-size:1.15rem">${r.best_gold.toLocaleString()}</span> 🪙</td>
+            <td style="color:var(--copper)">${r.best_regret != null ? r.best_regret.toLocaleString() : '—'}</td>
+            <td style="color:var(--fog)">${r.total_runs}</td>
+            <td style="color:rgba(200,184,154,0.5);font-size:0.82rem">${fmtDate(r.last_run)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ─── File drag/drop ──────────────────────────────────────────────────────────
+const dropEl = document.getElementById('file-drop');
+dropEl.addEventListener('dragover', e => { e.preventDefault(); dropEl.classList.add('dragover'); });
+dropEl.addEventListener('dragleave', () => dropEl.classList.remove('dragover'));
+dropEl.addEventListener('drop', e => {
+  e.preventDefault(); dropEl.classList.remove('dragover');
+  const f = e.dataTransfer.files[0];
+  if (f) { document.getElementById('file-input').files = e.dataTransfer.files; fileChosen({files:[f]}); }
+});
+function fileChosen(inp) {
+  const f = inp.files[0];
+  document.getElementById('file-chosen').textContent = f ? `📄 ${f.name}` : 'No file chosen';
+}
+
+// ─── Upload & run ────────────────────────────────────────────────────────────
+async function submitCode() {
+  const name = document.getElementById('upload-name').value.trim();
+  const sid  = document.getElementById('upload-id').value.trim();
+  const file = document.getElementById('file-input').files[0];
+
+  if (!name || !sid || !file) { toast('Fill in all fields and choose a file, mate!'); return; }
+
+  const btn = document.getElementById('upload-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Uploading...';
+
+  const fd = new FormData();
+  fd.append('student_name', name);
+  fd.append('student_id', sid);
+  fd.append('file', file);
+
+  const statusEl = document.getElementById('upload-status');
+  statusEl.innerHTML = `<div class="status-box info"><span class="spinner"></span> Uploading your code...</div>`;
+
+  try {
+    const res = await fetch(`${API}/api/upload`, { method:'POST', body:fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Upload failed');
+
+    statusEl.innerHTML = `<div class="status-box info"><span class="spinner"></span> Code received! Evaluation is running — the seas are churning...</div>`;
+    btn.textContent = '⏳ Evaluating...';
+
+    // poll for result
+    await pollResult(data.upload_id, statusEl, name);
+  } catch(e) {
+    statusEl.innerHTML = `<div class="status-box error">⚠️ ${esc(e.message)}</div>`;
+    btn.disabled = false;
+    btn.textContent = '⚓ Set Sail & Run Evaluation';
+  }
+}
+
+async function pollResult(uploadId, statusEl, name) {
+  const btn = document.getElementById('upload-btn');
+  for (let i = 0; i < 90; i++) {
+    await sleep(2000);
+    const res = await fetch(`${API}/api/upload-status/${uploadId}`);
+    const run = await res.json();
+    if (run.status === 'pending') continue;
+
+    btn.disabled = false;
+    btn.textContent = '⚓ Set Sail & Run Evaluation';
+
+    if (run.status === 'success') {
+      statusEl.innerHTML = `<div class="status-box success">⚓ Voyage complete! See your report below.</div>`;
+      showRunResult(run, name);
+      loadLeaderboard();
+    } else {
+      const errMsg = run.error_msg || 'Unknown error';
+      statusEl.innerHTML = `<div class="status-box error">
+        ☠️ Your bot ran aground!<br>
+        <code style="font-size:0.82rem;white-space:pre-wrap">${esc(errMsg)}</code>
+      </div>`;
+    }
+    return;
+  }
+  // timeout
+  statusEl.innerHTML = `<div class="status-box error">⌛ Timed out waiting for result. Try refreshing.</div>`;
+  btn.disabled = false;
+  btn.textContent = '⚓ Set Sail & Run Evaluation';
+}
+
+function showRunResult(run, name) {
+  const card = document.getElementById('result-card');
+  card.style.display = 'block';
+  document.getElementById('result-title').textContent = `📊 ${name}'s Voyage Report`;
+  document.getElementById('result-body').innerHTML = buildRunDetailHTML(run);
+  renderRunCharts(run);
+  card.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ─── Profile ─────────────────────────────────────────────────────────────────
+function loadProfileById(sid) {
+  showSection('profile');
+  document.getElementById('profile-id').value = sid;
+  loadProfile();
+}
+
+async function loadProfile() {
+  const sid = document.getElementById('profile-id').value.trim();
+  if (!sid) return;
+  const el = document.getElementById('profile-content');
+  el.innerHTML = `<div class="empty-state"><span class="spinner"></span> Fetching your log...</div>`;
+  const res = await fetch(`${API}/api/student/${sid}`);
+  const data = await res.json();
+  if (!data.runs.length && !data.uploads.length) {
+    el.innerHTML = `<div class="empty-state"><span class="empty-icon">🌊</span>No voyages found for this ID.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div style="margin-bottom:10px;color:var(--copper);font-style:italic;font-size:0.9rem;">
+      ${data.runs.length} runs recorded — click a row to expand
+    </div>
+    ${data.runs.map(r => `
+      <div class="run-item" onclick="openRunModal('${r.id}')">
+        <span class="run-gold">🪙 ${r.total_gold?.toLocaleString() ?? '—'}</span>
+        <div class="run-meta">
+          <span class="${badgeClass(r.status)}">${r.status}</span>
+          &nbsp; ${esc(r.filename)}
+        </div>
+        <span class="run-date">${fmtDate(r.ran_at)}</span>
+      </div>`).join('')}`;
+}
+
+async function openRunModal(runId) {
+  document.getElementById('run-modal').classList.add('open');
+  document.getElementById('modal-content').innerHTML =
+    `<div class="empty-state"><span class="spinner"></span> Loading run data...</div>`;
+  const res = await fetch(`${API}/api/run/${runId}`);
+  const run = await res.json();
+  document.getElementById('modal-content').innerHTML =
+    `<div class="card-title">📈 Run Detail</div>${buildRunDetailHTML(run)}`;
+  renderRunCharts(run, 'modal-');
+}
+
+function closeModal() {
+  document.getElementById('run-modal').classList.remove('open');
+}
+
+// ─── Run detail HTML ─────────────────────────────────────────────────────────
+function buildRunDetailHTML(run) {
+  const armCounts = new Array(8).fill(0);
+  run.choices.forEach(a => armCounts[a]++);
+  const maxCount = Math.max(...armCounts, 1);
+
+  const chestNames = window._chestNames || Array.from({length:8}, (_,i) => `Chest ${i}`);
+
+  return `
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-value">🪙 ${run.total_gold?.toLocaleString() ?? 0}</div>
+        <div class="stat-label">Total Gold Collected</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" style="color:var(--rust)">${run.regret?.toLocaleString() ?? '—'}</div>
+        <div class="stat-label">Expected Regret</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${run.choices?.length ?? 0}</div>
+        <div class="stat-label">Total Pulls</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">${run.total_gold && run.choices.length ? (run.total_gold/run.choices.length).toFixed(1) : '—'}</div>
+        <div class="stat-label">Avg Gold / Pull</div>
+      </div>
+    </div>
+
+    <div style="margin-top:8px;margin-bottom:6px;font-family:'Pirata One',cursive;color:var(--gold);font-size:1rem;">
+      📊 Cumulative Gold
+    </div>
+    <div class="chart-wrap"><canvas id="${run.id}-cumgold"></canvas></div>
+
+    <div style="margin-top:20px;margin-bottom:6px;font-family:'Pirata One',cursive;color:var(--gold);font-size:1rem;">
+      ⚔️ Chest Pull Distribution
+    </div>
+    <div class="arm-bar-wrap">
+      ${armCounts.map((c,i) => `
+        <div class="arm-bar-row">
+          <div class="arm-bar-label" title="${chestNames[i]}">${chestNames[i]}</div>
+          <div class="arm-bar-bg">
+            <div class="arm-bar-fill" style="width:${(c/maxCount*100).toFixed(1)}%"></div>
+          </div>
+          <div class="arm-bar-count">${c}</div>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:4px;font-size:0.8rem;color:var(--copper);font-style:italic">
+      ${topArm(armCounts, chestNames)}
+    </div>`;
+}
+
+function renderRunCharts(run, prefix='') {
+  const rewards = run.rewards || [];
+  if (!rewards.length) return;
+  const canvasId = run.id + '-cumgold';
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  // downsample to 200 points for performance
+  const step = Math.max(1, Math.floor(rewards.length / 200));
+  const labels = [], cumData = [];
+  let cum = 0;
+  for (let i = 0; i < rewards.length; i += step) {
+    cum += rewards.slice(i, i+step).reduce((a,b) => a+b, 0);
+    labels.push(i);
+    cumData.push(Math.round(cum));
+  }
+
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Cumulative Gold',
+        data: cumData,
+        borderColor: '#d4a017',
+        backgroundColor: 'rgba(212,160,23,0.1)',
+        borderWidth: 2,
+        pointRadius: 0,
+        fill: true,
+        tension: 0.3,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color:'rgba(200,184,154,0.5)', font:{size:10} }, grid: { color:'rgba(212,160,23,0.05)' } },
+        y: { ticks: { color:'rgba(200,184,154,0.5)', font:{size:10} }, grid: { color:'rgba(212,160,23,0.05)' } },
+      }
+    }
+  });
+}
+
+function topArm(counts, names) {
+  const max = Math.max(...counts);
+  const idx = counts.indexOf(max);
+  return `Most visited: <strong style="color:var(--gold2)">${names[idx]}</strong> — ${max} pulls (${(max/counts.reduce((a,b)=>a+b,1)*100).toFixed(1)}%)`;
+}
+
+// ─── Chests ──────────────────────────────────────────────────────────────────
+const CHEST_ICONS = ['💀','🦪','🧜','🐙','🦜','⚓','🍺','💀'];
+const CHEST_EMOJIS = ['🗝️','📦','✨','🐚','🦜','🏅','🍻','🦴'];
+
+async function loadChests() {
+  const el = document.getElementById('chest-grid');
+  const res = await fetch(`${API}/api/env-info`);
+  const data = await res.json();
+  window._chestNames = data.chest_names;
+  const icons = ['💀','🦪','🧜‍♀️','🐙','🦜','⚓','🍺','💀'];
+  el.innerHTML = data.chest_names.map((name, i) => `
+    <div class="chest-card">
+      <span class="chest-icon">${['🗝️','📦','✨','🐚','🦜','🏅','🍻','🦴'][i]}</span>
+      <div class="chest-name">${esc(name)}</div>
+      <div class="chest-desc">${esc(data.chest_descriptions[i])}</div>
+      <div class="chest-index">arm index: ${i}</div>
+    </div>`).join('');
+}
+
+// ─── Utils ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+}
+function badgeClass(status) {
+  if (status === 'success') return 'badge badge-success';
+  if (status === 'error' || status === 'timeout') return 'badge badge-error';
+  return 'badge badge-pending';
+}
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+loadLeaderboard();
+loadChests();
+</script>
+</body>
+</html>
