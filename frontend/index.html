@@ -501,9 +501,12 @@ canvas { width: 100% !important; }
 <section id="upload" class="section">
   <div class="card">
     <div class="card-title">🗺️ Chart Your Course</div>
-    <p style="color:var(--copper);font-style:italic;margin-bottom:24px;">
+    <p style="color:var(--copper);font-style:italic;margin-bottom:12px;">
       Submit your <code style="color:var(--gold2)">BanditAgent</code> to plunder these shores.
       Your bot will sail a horizon of <strong style="color:var(--gold2)">1,000 pulls</strong>.
+    </p>
+    <p style="color:var(--fog);font-size:0.9rem;margin-bottom:20px;">
+      💡 <strong>Tip:</strong> Read the theory in the <strong>Ship's Guide</strong> tab first to understand Quest 1 (ETC) or Quest 2 (ε-Greedy) before submitting!
     </p>
 
     <div class="form-group">
@@ -515,11 +518,11 @@ canvas { width: 100% !important; }
       <input class="form-input" id="upload-id" type="text" placeholder="e.g. CS21B042" autocomplete="off"/>
     </div>
     <div class="form-group">
-      <label class="form-label">⚓ Quest Tracker</label>
+      <label class="form-label">⚓ Quest Tracker — Which quest are you solving?</label>
       <select class="form-input" id="quest-select" style="cursor:pointer;">
         <option value="" selected disabled>Select your quest...</option>
-        <option value="1">🗺️ Quest 1: Basic BanditAgent</option>
-        <option value="2">⚓ Quest 2: ε-Greedy</option>
+        <option value="1">🗺️ Quest 1: Explore-Then-Commit (ETC)</option>
+        <option value="2">⚓ Quest 2: Epsilon-Greedy (ε-Greedy)</option>
       </select>
     </div>
     <div class="form-group">
@@ -591,52 +594,121 @@ canvas { width: 100% !important; }
       <code style="color:var(--gold2)">select_arm()</code> and <code style="color:var(--gold2)">update()</code>
       alternately for 1,000 rounds.
     </p>
-    <div class="card-title" style="font-size:1.2rem;">🗺️ Quest 1: Basic BanditAgent</div>
-    <div class="code-hint">class BanditAgent:
-    def __init__(self, n_arms: int):
-        """
-        Called once at the start.
-        n_arms = 8  (the number of treasure chests)
-        """
-        self.n_arms = n_arms
-        # initialise your data structures here
+  </div>
 
-    def select_arm(self) -> int:
-        """
-        Called every round. Return an integer in [0, n_arms-1].
-        This is the chest index your bot will open.
-        """
-        raise NotImplementedError
+  <!-- Quest 1: ETC Algorithm -->
+  <div class="card">
+    <div class="card-title" style="font-size:1.3rem;">🗺️ Quest 1: Explore-Then-Commit (ETC) Algorithm</div>
+    <p style="color:var(--copper);font-style:italic;margin-bottom:16px;font-size:0.95rem;">
+      Part 1: Learn the theory • Part 2: Write the code
+    </p>
+    
+    <button onclick="toggleTheory('quest1')" style="width:100%;padding:12px;background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Theory & Exercises for Quest 1</button>
+    
+    <div id="quest1-theory" style="display:none;margin-bottom:20px;padding:16px;background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.2);border-radius:4px;">
+      <h4 style="color:var(--gold2);margin-bottom:12px;">ETC Algorithm Overview</h4>
+      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
+        <strong>Explore-Then-Commit</strong> works in two phases:
+      </p>
+      <ul style="color:var(--fog);margin-left:20px;margin-bottom:12px;font-size:0.95rem;">
+        <li><strong>Exploration Phase:</strong> Pull each arm exactly <em>m</em> times (systematically, round-robin)</li>
+        <li><strong>Exploitation Phase:</strong> After nm pulls, commit to the best arm found and exploit it</li>
+      </ul>
+      <p style="color:var(--copper);font-style:italic;font-size:0.9rem;margin-bottom:12px;">
+        Why ETC? Simple, no randomness during exploration = more predictable, easier to analyze.
+      </p>
+      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
+        <strong>Key insight:</strong> Use <code style="color:var(--gold2)">(t - 1) % n_arms</code> to systematically visit each arm. After nm rounds, all arms have been sampled equally.
+      </p>
+    </div>
 
-    def update(self, arm: int, reward: float):
-        """
-        Called right after select_arm() with the gold you received.
-        Use this to update your estimates.
-        """
-        raise NotImplementedError
-</div>
-    <br/>
-    <div class="card-title" style="font-size:1.2rem;">⚓ Quest 2: ε-Greedy Implementation</div>
+    <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
+      <strong>Implementation Template:</strong>
+    </p>
     <div class="code-hint">import numpy as np
 
 class BanditAgent:
-    def __init__(self, n_arms):
-        self.n_arms  = n_arms
-        self.counts  = np.zeros(n_arms)
-        self.values  = np.zeros(n_arms)
-        self.epsilon = 0.1
+    def __init__(self, n_arms: int):
+        self.n_arms = n_arms
+        self.counts = np.zeros(n_arms)
+        self.values = np.zeros(n_arms)
+        self.m = 15            # pulls per arm during exploration
+        self.t = 0             # round counter
 
-    def select_arm(self):
-        if np.random.random() < self.epsilon:
-            return np.random.randint(self.n_arms)
+    def select_arm(self) -> int:
+        self.t += 1
+        if self.t <= self.m * self.n_arms:
+            # Exploration: round-robin through arms
+            return (self.t - 1) % self.n_arms
+        # Exploitation: pick best arm
         return int(np.argmax(self.values))
 
-    def update(self, arm, reward):
+    def update(self, arm: int, reward: float):
         self.counts[arm] += 1
         n = self.counts[arm]
         self.values[arm] += (reward - self.values[arm]) / n
 </div>
-    <br/>
+  </div>
+
+  <!-- Quest 2: Epsilon-Greedy Algorithm -->
+  <div class="card">
+    <div class="card-title" style="font-size:1.3rem;">⚓ Quest 2: Epsilon-Greedy (ε-Greedy) Algorithm</div>
+    <p style="color:var(--copper);font-style:italic;margin-bottom:16px;font-size:0.95rem;">
+      Part 1: Learn the theory • Part 2: Write the code
+    </p>
+    
+    <button onclick="toggleTheory('quest2')" style="width:100%;padding:12px;background:rgba(14,42,74,0.3);border:1px solid rgba(42,80,140,0.4);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Theory & Exercises for Quest 2</button>
+    
+    <div id="quest2-theory" style="display:none;margin-bottom:20px;padding:16px;background:rgba(42,80,140,0.08);border:1px solid rgba(42,80,140,0.2);border-radius:4px;">
+      <h4 style="color:var(--gold2);margin-bottom:12px;">Epsilon-Greedy Algorithm Overview</h4>
+      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
+        <strong>Epsilon-Greedy</strong> balances exploration and exploitation with a probability:
+      </p>
+      <ul style="color:var(--fog);margin-left:20px;margin-bottom:12px;font-size:0.95rem;">
+        <li><strong>With probability ε:</strong> Pick a random arm (exploration)</li>
+        <li><strong>With probability 1-ε:</strong> Pick the best arm (exploitation)</li>
+        <li><strong>Decay:</strong> ε shrinks over time to move from explore to exploit</li>
+      </ul>
+      <p style="color:var(--copper);font-style:italic;font-size:0.9rem;margin-bottom:12px;">
+        Why ε-Greedy? Simple, flexible, and we explore continuously (not just at the start).
+      </p>
+      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
+        <strong>Key insight:</strong> Start with ε=1.0 (fully random), then decay ε each round towards a minimum (e.g., 0.01).
+      </p>
+    </div>
+
+    <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
+      <strong>Implementation Template:</strong>
+    </p>
+    <div class="code-hint">import numpy as np
+
+class BanditAgent:
+    def __init__(self, n_arms):
+        self.n_arms = n_arms
+        self.counts = np.zeros(n_arms)
+        self.values = np.zeros(n_arms)
+        self.epsilon = 1.0        # start: fully exploratory
+        self.decay = 0.995        # epsilon shrinks each round
+        self.min_eps = 0.01       # exploration floor
+
+    def select_arm(self) -> int:
+        if np.random.random() < self.epsilon:
+            # Exploration: random arm
+            return np.random.randint(self.n_arms)
+        # Exploitation: best arm
+        return int(np.argmax(self.values))
+
+    def update(self, arm: int, reward: float):
+        self.counts[arm] += 1
+        n = self.counts[arm]
+        self.values[arm] += (reward - self.values[arm]) / n
+        # Decay epsilon
+        self.epsilon = max(self.min_eps, self.epsilon * self.decay)
+</div>
+  </div>
+
+  <!-- Rules -->
+  <div class="card">
     <div style="background:rgba(139,0,0,0.1);border:1px solid rgba(139,0,0,0.3);padding:16px;border-radius:4px;color:var(--fog);font-size:0.9rem;line-height:1.8;">
       <strong style="color:var(--gold)">⚠️ Rules of the Sea:</strong><br/>
       • Timeout: 60 seconds total execution — slow code walks the plank.<br/>
@@ -647,6 +719,17 @@ class BanditAgent:
     </div>
   </div>
 </section>
+
+<script>
+function toggleTheory(questId) {
+  const el = document.getElementById(questId + '-theory');
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+</script>
 
 </main>
 </div><!-- /wrapper -->
