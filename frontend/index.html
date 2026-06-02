@@ -603,77 +603,25 @@ canvas { width: 100% !important; }
       Part 1: Learn the theory • Part 2: Write the code
     </p>
     
-    <button onclick="toggleTheory('quest1')" style="width:100%;padding:12px;background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Theory & Exercises for Quest 1</button>
+    <button onclick="toggleTheory('quest1')" style="width:100%;padding:12px;background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Theory for Quest 1: ETC Algorithm</button>
     
     <div id="quest1-theory" style="display:none;margin-bottom:20px;padding:16px;background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.2);border-radius:4px;">
-      <h4 style="color:var(--gold2);margin-bottom:12px;">ETC Algorithm Overview</h4>
+      <h4 style="color:var(--gold2);margin-bottom:12px;">🎯 Algorithm I — Explore-Then-Commit (ETC)</h4>
+      
       <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
-        <strong>Explore-Then-Commit</strong> works in two phases:
+        <strong>ETC</strong> is a simple two-phase bandit algorithm:
       </p>
-      <ul style="color:var(--fog);margin-left:20px;margin-bottom:12px;font-size:0.95rem;">
-        <li><strong>Exploration Phase:</strong> Pull each arm exactly <em>m</em> times (systematically, round-robin)</li>
-        <li><strong>Exploitation Phase:</strong> After nm pulls, commit to the best arm found and exploit it</li>
-      </ul>
+      <ol style="color:var(--fog);margin-left:20px;margin-bottom:12px;font-size:0.95rem;line-height:1.6;">
+        <li><strong>Exploration Phase:</strong> Pull each arm exactly <em>m</em> times (m · n_arms total pulls) using <strong>systematic round-robin</strong> selection: <code style="color:var(--gold2)">(t - 1) % n_arms</code></li>
+        <li><strong>Exploitation Phase:</strong> After gathering m samples from each arm, commit to the arm with the highest estimated reward using <strong>argmax</strong> and pull it for all remaining rounds.</li>
+      </ol>
+      
+      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
+        <strong>Why ETC?</strong> The key advantage is <strong>predictability</strong>: no randomness during exploration means every arm gets sampled exactly the same number of times before we make a final decision.
+      </p>
+      
       <p style="color:var(--copper);font-style:italic;font-size:0.9rem;margin-bottom:12px;">
-        Why ETC? Simple, no randomness during exploration = more predictable, easier to analyze.
-      </p>
-      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
-        <strong>Key insight:</strong> Use <code style="color:var(--gold2)">(t - 1) % n_arms</code> to systematically visit each arm. After nm rounds, all arms have been sampled equally.
-      </p>
-    </div>
-
-    <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
-      <strong>Implementation Template:</strong>
-    </p>
-    <div class="code-hint">import numpy as np
-
-class BanditAgent:
-    def __init__(self, n_arms: int):
-        self.n_arms = n_arms
-        self.counts = np.zeros(n_arms)
-        self.values = np.zeros(n_arms)
-        self.m = 15            # pulls per arm during exploration
-        self.t = 0             # round counter
-
-    def select_arm(self) -> int:
-        self.t += 1
-        if self.t <= self.m * self.n_arms:
-            # Exploration: round-robin through arms
-            return (self.t - 1) % self.n_arms
-        # Exploitation: pick best arm
-        return int(np.argmax(self.values))
-
-    def update(self, arm: int, reward: float):
-        self.counts[arm] += 1
-        n = self.counts[arm]
-        self.values[arm] += (reward - self.values[arm]) / n
-</div>
-  </div>
-
-  <!-- Quest 2: Epsilon-Greedy Algorithm -->
-  <div class="card">
-    <div class="card-title" style="font-size:1.3rem;">⚓ Quest 2: Epsilon-Greedy (ε-Greedy) Algorithm</div>
-    <p style="color:var(--copper);font-style:italic;margin-bottom:16px;font-size:0.95rem;">
-      Part 1: Learn the theory • Part 2: Write the code
-    </p>
-    
-    <button onclick="toggleTheory('quest2')" style="width:100%;padding:12px;background:rgba(14,42,74,0.3);border:1px solid rgba(42,80,140,0.4);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Theory & Exercises for Quest 2</button>
-    
-    <div id="quest2-theory" style="display:none;margin-bottom:20px;padding:16px;background:rgba(42,80,140,0.08);border:1px solid rgba(42,80,140,0.2);border-radius:4px;">
-      <h4 style="color:var(--gold2);margin-bottom:12px;">Epsilon-Greedy Algorithm Overview</h4>
-      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
-        <strong>Epsilon-Greedy</strong> balances exploration and exploitation with a probability:
-      </p>
-      <ul style="color:var(--fog);margin-left:20px;margin-bottom:12px;font-size:0.95rem;">
-        <li><strong>With probability ε:</strong> Pick a random arm (exploration)</li>
-        <li><strong>With probability 1-ε:</strong> Pick the best arm (exploitation)</li>
-        <li><strong>Decay:</strong> ε shrinks over time to move from explore to exploit</li>
-      </ul>
-      <p style="color:var(--copper);font-style:italic;font-size:0.9rem;margin-bottom:12px;">
-        Why ε-Greedy? Simple, flexible, and we explore continuously (not just at the start).
-      </p>
-      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
-        <strong>Key insight:</strong> Start with ε=1.0 (fully random), then decay ε each round towards a minimum (e.g., 0.01).
+        <strong>Example:</strong> With m=15 and n_arms=8, you explore for 15×8=120 rounds (every arm gets 15 pulls), then exploit the best arm for rounds 121–1000.
       </p>
     </div>
 
@@ -687,22 +635,80 @@ class BanditAgent:
         self.n_arms = n_arms
         self.counts = np.zeros(n_arms)
         self.values = np.zeros(n_arms)
-        self.epsilon = 1.0        # start: fully exploratory
-        self.decay = 0.995        # epsilon shrinks each round
-        self.min_eps = 0.01       # exploration floor
+        self.m = 15           # exploration pulls per arm
+        self.t = 0            # round counter
 
-    def select_arm(self) -> int:
-        if np.random.random() < self.epsilon:
-            # Exploration: random arm
-            return np.random.randint(self.n_arms)
-        # Exploitation: best arm
+    def select_arm(self):
+        self.t += 1
+        if self.t <= self.m * self.n_arms:
+            # Exploration phase: systematic round-robin
+            return (self.t - 1) % self.n_arms
+        # Exploitation phase: pick best arm
         return int(np.argmax(self.values))
 
-    def update(self, arm: int, reward: float):
+    def update(self, arm, reward):
         self.counts[arm] += 1
         n = self.counts[arm]
         self.values[arm] += (reward - self.values[arm]) / n
-        # Decay epsilon
+</div>
+  </div>
+
+  <!-- Quest 2: Epsilon-Greedy Algorithm -->
+  <div class="card">
+    <div class="card-title" style="font-size:1.3rem;">⚓ Quest 2: Epsilon-Greedy (ε-Greedy) Algorithm</div>
+    <p style="color:var(--copper);font-style:italic;margin-bottom:16px;font-size:0.95rem;">
+      Part 1: Learn the theory • Part 2: Write the code
+    </p>
+    
+    <button onclick="toggleTheory('quest2')" style="width:100%;padding:12px;background:rgba(14,42,74,0.3);border:1px solid rgba(42,80,140,0.4);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Theory for Quest 2: ε-Greedy Algorithm</button>
+    
+    <div id="quest2-theory" style="display:none;margin-bottom:20px;padding:16px;background:rgba(42,80,140,0.08);border:1px solid rgba(42,80,140,0.2);border-radius:4px;">
+      <h4 style="color:var(--gold2);margin-bottom:12px;">🎯 Algorithm II — Epsilon-Greedy (ε-Greedy)</h4>
+      
+      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
+        <strong>ε-Greedy</strong> uses a <strong>decaying probability</strong> to balance exploration and exploitation throughout training:
+      </p>
+      <ul style="color:var(--fog);margin-left:20px;margin-bottom:12px;font-size:0.95rem;line-height:1.6;">
+        <li><strong>Each round:</strong> With probability ε → explore (pick a random arm)</li>
+        <li><strong>Each round:</strong> With probability 1-ε → exploit (pick the best arm using argmax)</li>
+        <li><strong>After each update:</strong> Decay ε: <code style="color:var(--gold2)">ε_new = max(min_ε, ε_old × decay)</code></li>
+      </ul>
+      
+      <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
+        <strong>Why ε-Greedy?</strong> Unlike ETC's fixed exploration phase, ε-Greedy <strong>explores continuously but with decreasing probability</strong>. Start aggressive (ε=1.0, fully random), gradually become greedy (ε→0.01).
+      </p>
+      
+      <p style="color:var(--copper);font-style:italic;font-size:0.9rem;margin-bottom:12px;">
+        <strong>Example:</strong> With ε=1.0, decay=0.995, min_ε=0.01—round 1 is fully random, but by round 100, ε≈0.61, and it keeps decaying toward 0.01. This lets you adapt if reward distributions change.
+      </p>
+    </div>
+
+    <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
+      <strong>Implementation Template:</strong>
+    </p>
+    <div class="code-hint">import numpy as np
+
+class BanditAgent:
+    def __init__(self, n_arms):
+        self.n_arms = n_arms
+        self.counts = np.zeros(n_arms)
+        self.values = np.zeros(n_arms)
+        self.epsilon = 1.0       # start: fully exploratory
+        self.decay = 0.995       # epsilon shrinks each round
+        self.min_eps = 0.01      # exploration floor
+
+    def select_arm(self):
+        if np.random.random() < self.epsilon:
+            # Exploration: pick random arm
+            return np.random.randint(self.n_arms)
+        # Exploitation: pick best arm
+        return int(np.argmax(self.values))
+
+    def update(self, arm, reward):
+        self.counts[arm] += 1
+        n = self.counts[arm]
+        self.values[arm] += (reward - self.values[arm]) / n
+        # Decay epsilon toward minimum floor
         self.epsilon = max(self.min_eps, self.epsilon * self.decay)
 </div>
   </div>
