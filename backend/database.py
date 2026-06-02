@@ -27,6 +27,7 @@ def create_tables():
             filename TEXT NOT NULL,
             filepath TEXT NOT NULL,
             file_hash TEXT NOT NULL,
+            quest TEXT,
             uploaded_at TEXT NOT NULL
         );
 
@@ -49,12 +50,12 @@ def create_tables():
     conn.close()
 
 
-def save_upload(upload_id, student_name, student_id, filename, filepath, file_hash):
+def save_upload(upload_id, student_name, student_id, filename, filepath, file_hash, quest=None):
     conn = get_db()
     conn.execute(
-        """INSERT INTO uploads (id, student_name, student_id, filename, filepath, file_hash, uploaded_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?)""",
-        (upload_id, student_name, student_id, filename, filepath, file_hash, datetime.utcnow().isoformat()),
+        """INSERT INTO uploads (id, student_name, student_id, filename, filepath, file_hash, quest, uploaded_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (upload_id, student_name, student_id, filename, filepath, file_hash, quest, datetime.utcnow().isoformat()),
     )
     conn.commit()
     conn.close()

@@ -101,6 +101,7 @@ async def upload_code(
     background_tasks: BackgroundTasks,
     student_name: str = Form(...),
     student_id: str = Form(...),
+    quest: str = Form(...),
     file: UploadFile = File(...),
 ):
     if not file.filename.endswith(".py"):
@@ -124,6 +125,7 @@ async def upload_code(
         filename=file.filename,
         filepath=str(save_path),
         file_hash=file_hash,
+        quest=quest,
     )
 
     background_tasks.add_task(run_evaluation, upload_id, str(save_path), student_name, student_id)

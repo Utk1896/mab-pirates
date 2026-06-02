@@ -515,6 +515,14 @@ canvas { width: 100% !important; }
       <input class="form-input" id="upload-id" type="text" placeholder="e.g. CS21B042" autocomplete="off"/>
     </div>
     <div class="form-group">
+      <label class="form-label">⚓ Quest Tracker</label>
+      <select class="form-input" id="quest-select" style="cursor:pointer;">
+        <option value="" selected disabled>Select your quest...</option>
+        <option value="1">🗺️ Quest 1: Basic BanditAgent</option>
+        <option value="2">⚓ Quest 2: ε-Greedy</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label class="form-label">📜 Your Python Script (.py)</label>
       <div class="file-drop" id="file-drop" onclick="document.getElementById('file-input').click()">
         <span class="file-drop-icon">🏴‍☠️</span>
@@ -583,6 +591,7 @@ canvas { width: 100% !important; }
       <code style="color:var(--gold2)">select_arm()</code> and <code style="color:var(--gold2)">update()</code>
       alternately for 1,000 rounds.
     </p>
+    <div class="card-title" style="font-size:1.2rem;">🗺️ Quest 1: Basic BanditAgent</div>
     <div class="code-hint">class BanditAgent:
     def __init__(self, n_arms: int):
         """
@@ -607,7 +616,7 @@ canvas { width: 100% !important; }
         raise NotImplementedError
 </div>
     <br/>
-    <div class="card-title" style="font-size:1.2rem;">⚓ Example: ε-Greedy</div>
+    <div class="card-title" style="font-size:1.2rem;">⚓ Quest 2: ε-Greedy Implementation</div>
     <div class="code-hint">import numpy as np
 
 class BanditAgent:
@@ -729,9 +738,10 @@ function fileChosen(inp) {
 async function submitCode() {
   const name = document.getElementById('upload-name').value.trim();
   const sid  = document.getElementById('upload-id').value.trim();
+  const quest = document.getElementById('quest-select').value;
   const file = document.getElementById('file-input').files[0];
 
-  if (!name || !sid || !file) { toast('Fill in all fields and choose a file, mate!'); return; }
+  if (!name || !sid || !quest || !file) { toast('Fill in all fields, select a quest, and choose a file, mate!'); return; }
 
   const btn = document.getElementById('upload-btn');
   btn.disabled = true;
@@ -740,6 +750,7 @@ async function submitCode() {
   const fd = new FormData();
   fd.append('student_name', name);
   fd.append('student_id', sid);
+  fd.append('quest', quest);
   fd.append('file', file);
 
   const statusEl = document.getElementById('upload-status');
