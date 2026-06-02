@@ -271,3 +271,54 @@ async def mentor_view_code(upload_id: str, token: str):
         raise HTTPException(404, "Upload not found")
     code = Path(upload["filepath"]).read_text()
     return {"code": code, "upload": upload}
+
+
+@app.get("/api/mentor/export")
+async def mentor_export(token: str):
+    expected = hashlib.sha256(MENTOR_PASSWORD.encode()).hexdigest()
+    if token != expected:
+        raise HTTPException(403, "Unauthorized")
+        
+    uploads = get_all_uploads_for_mentor()
+    
+    # Group by student
+    students = {}
+    for u in uploads:
+        key = (u["student_name"], u["student_id"])
+        if key not in students:
+            students[key] = []
+        
+        # Load code
+        try:
+            code = Path(u["filepath"]).read_text()
+        except Exception:
+            code = "Error reading file"
+            
+        u["code"] = code
+        students[key].append(u)
+        
+    # Sort students by name and id (case-insensitive)
+    sorted_keys = sorted(students.keys(), key=lambda x: (x[0].lower(), x[1].lower()))
+    
+    export_data = []
+    for k in sorted_keys:
+        subs = students[k]
+        # Sort submissions by time
+        subs.sort(key=lambda x: x["uploaded_at"])
+        export_data.append({
+            "student_name": k[0],
+            "student_id": k[1],
+            "submission_count": len(subs),
+            "submissions": [
+                {
+                    "filename": s["filename"],
+                    "uploaded_at": s["uploaded_at"],
+                    "status": s["status"],
+                    "total_gold": s["total_gold"],
+                    "regret": s["regret"],
+                    "code": s["code"]
+                } for s in subs
+            ]
+        })
+        
+    return export_data

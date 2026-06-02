@@ -212,7 +212,10 @@ pre {
       <span style="font-family:'Pirata One',cursive;color:var(--gold2);font-size:1.3rem">All Submissions</span>
       <span id="count-badge" style="color:var(--copper);font-style:italic;font-size:0.9rem;margin-left:10px"></span>
     </div>
-    <button class="btn-sm" onclick="refresh()">⟳ Refresh</button>
+    <div>
+      <button class="btn-sm" onclick="exportSubmissions()">📥 Export</button>
+      <button class="btn-sm" onclick="refresh()">⟳ Refresh</button>
+    </div>
   </div>
 
   <div class="search-row">
@@ -337,6 +340,26 @@ async function viewCode(uploadId) {
 function closeModal() {
   document.getElementById('code-modal').classList.remove('open');
 }
+
+async function exportSubmissions() {
+  toast('Generating export...');
+  try {
+    const res = await fetch(`${API}/api/mentor/export?token=${token}`);
+    if (!res.ok) throw new Error('Export failed');
+    const data = await res.json();
+    
+    // Download as JSON
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", "submissions_export.json");
+    dlAnchorElem.click();
+    toast('Export complete!');
+  } catch(e) {
+    toast('Error exporting submissions.');
+  }
+}
+
 function refresh() { loadUploads(); toast('Refreshed the log!'); }
 function toast(msg) {
   const t = document.getElementById('toast');

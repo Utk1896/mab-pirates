@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>⚓ MAB Pirates — Treasure Hunt Tournament</title>
+<title>⚓ Assignment 2. Reinforcements are In — Multi Armed Bandits</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=IM+Fell+English:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet"/>
 <style>
@@ -43,8 +43,15 @@ body::before {
     radial-gradient(ellipse at 20% 80%, rgba(14,42,74,0.6) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgba(10,20,40,0.8) 0%, transparent 50%),
     linear-gradient(180deg, #0a0e1a 0%, #0d1a2e 40%, #0a1520 100%);
+  background-size: 200% 200%;
+  animation: oceanWaves 12s ease infinite;
   pointer-events: none;
   z-index: 0;
+}
+@keyframes oceanWaves {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Stars */
@@ -454,6 +461,7 @@ canvas { width: 100% !important; }
 /* Cumulative gold chart line */
 .reward-chart-wrap { width: 100%; height: 200px; }
 </style>
+<link rel="stylesheet" href="/static/exercises.css"/>
 </head>
 <body>
 <div class="wrapper">
@@ -461,8 +469,8 @@ canvas { width: 100% !important; }
 <!-- HEADER -->
 <header class="site-header">
   <span class="skull">☠️</span>
-  <h1 class="site-title">MAB Pirates</h1>
-  <p class="site-subtitle">— The Treasure Hunt Tournament —</p>
+  <h1 class="site-title">Assignment 2. Reinforcements are In</h1>
+  <p class="site-subtitle">— Multi Armed Bandits —</p>
   <div class="divider"></div>
   <p style="color:var(--copper);font-style:italic;font-size:0.95rem;">
     8 enchanted chests, 1000 pulls, one captain claims the most gold.
@@ -600,12 +608,12 @@ canvas { width: 100% !important; }
   <div class="card">
     <div class="card-title" style="font-size:1.3rem;">🗺️ Quest 1: Explore-Then-Commit (ETC) Algorithm</div>
     <p style="color:var(--copper);font-style:italic;margin-bottom:16px;font-size:0.95rem;">
-      Part 1: Learn the theory • Part 2: Write the code
+      Part 1: Interactive exercises • Part 2: Write the code
     </p>
     
-    <button onclick="toggleTheory('quest1')" style="width:100%;padding:12px;background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Theory for Quest 1: ETC Algorithm</button>
+    <button id="quest1-toggle-btn" onclick="toggleExercises('quest1')" style="width:100%;padding:12px;background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Part 1: Theory & Interactive Exercises</button>
     
-    <div id="quest1-theory" style="display:none;margin-bottom:20px;padding:16px;background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.2);border-radius:4px;">
+    <div id="quest1-exercises" style="display:none;margin-bottom:20px;padding:16px;background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.2);border-radius:4px;">
       <h4 style="color:var(--gold2);margin-bottom:12px;">🎯 Algorithm I — Explore-Then-Commit (ETC)</h4>
       
       <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
@@ -626,30 +634,37 @@ canvas { width: 100% !important; }
     </div>
 
     <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
-      <strong>Implementation Template:</strong>
+      You are a pirate captain anchored before an island with 8 treasure chests. Each chest pays out a random amount of gold when opened, but every chest has a different hidden average payout — you don't know which is richest.
+    </p>
+    <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
+      Your crew will make exactly 1,000 attempts total. A clever captain doesn't blindly try the same chest forever, nor does she waste all her time sampling. She surveys — then strikes. Implement the BanditAgent class below using the ETC algorithm. Compute m* from T and K in __init__, pull arms in round-robin during exploration, then commit to argmax(values) for the rest of the game. Aim to minimise cumulative regret over 1,000 rounds.
+    </p>
+    <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
+      <strong>Starter Template:</strong>
     </p>
     <div class="code-hint">import numpy as np
 
 class BanditAgent:
-    def __init__(self, n_arms):
-        self.n_arms = n_arms
-        self.counts = np.zeros(n_arms)
-        self.values = np.zeros(n_arms)
-        self.m = 15           # exploration pulls per arm
-        self.t = 0            # round counter
 
-    def select_arm(self):
-        self.t += 1
-        if self.t <= self.m * self.n_arms:
-            # Exploration phase: systematic round-robin
-            return (self.t - 1) % self.n_arms
-        # Exploitation phase: pick best arm
-        return int(np.argmax(self.values))
+    def __init__(self, n_arms: int):
+        # n_arms = 8, T = 1000
+        self.n_arms  = n_arms
+        self.counts  = np.zeros(n_arms)
+        self.values  = np.zeros(n_arms)
+        T            = 1000
+        self.m        = # YOUR FORMULA HERE
+        self.round    = 0
+        self.best_arm = None
 
-    def update(self, arm, reward):
-        self.counts[arm] += 1
-        n = self.counts[arm]
-        self.values[arm] += (reward - self.values[arm]) / n
+    def select_arm(self) -> int:
+        self.round += 1
+        # If still in exploration phase → round-robin
+        # Else → return self.best_arm (lock it in on first call)
+        raise NotImplementedError
+
+    def update(self, arm: int, reward: float):
+        # Welford's incremental mean update
+        raise NotImplementedError
 </div>
   </div>
 
@@ -657,12 +672,12 @@ class BanditAgent:
   <div class="card">
     <div class="card-title" style="font-size:1.3rem;">⚓ Quest 2: Epsilon-Greedy (ε-Greedy) Algorithm</div>
     <p style="color:var(--copper);font-style:italic;margin-bottom:16px;font-size:0.95rem;">
-      Part 1: Learn the theory • Part 2: Write the code
+      Part 1: Interactive exercises • Part 2: Write the code
     </p>
     
-    <button onclick="toggleTheory('quest2')" style="width:100%;padding:12px;background:rgba(14,42,74,0.3);border:1px solid rgba(42,80,140,0.4);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Theory for Quest 2: ε-Greedy Algorithm</button>
+    <button id="quest2-toggle-btn" onclick="toggleExercises('quest2')" style="width:100%;padding:12px;background:rgba(14,42,74,0.3);border:1px solid rgba(42,80,140,0.4);color:var(--gold);cursor:pointer;border-radius:4px;font-family:'Pirata One',cursive;font-size:1rem;margin-bottom:16px;">📚 Part 1: Theory & Interactive Exercises</button>
     
-    <div id="quest2-theory" style="display:none;margin-bottom:20px;padding:16px;background:rgba(42,80,140,0.08);border:1px solid rgba(42,80,140,0.2);border-radius:4px;">
+    <div id="quest2-exercises" style="display:none;margin-bottom:20px;padding:16px;background:rgba(42,80,140,0.08);border:1px solid rgba(42,80,140,0.2);border-radius:4px;">
       <h4 style="color:var(--gold2);margin-bottom:12px;">🎯 Algorithm II — Epsilon-Greedy (ε-Greedy)</h4>
       
       <p style="color:var(--fog);font-size:0.95rem;line-height:1.6;margin-bottom:12px;">
@@ -684,32 +699,35 @@ class BanditAgent:
     </div>
 
     <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
-      <strong>Implementation Template:</strong>
+      Unlike a rigid two-phase plan, a true gambler never fully stops learning. Every single round you flip a biased coin: if it lands on explore, you randomly try a chest you might be underestimating. If it lands on exploit, you open the chest you currently believe is best.
+    </p>
+    <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
+      The trick: as your knowledge grows, you shrink the explore probability. A veteran pirate wastes less time on wild guesses — but never stops questioning entirely. Implement the BanditAgent class below using decaying ε-greedy. On every round, compute ε_t = min(1, c/√t), flip the coin, and either explore randomly or exploit greedily. The decay constant c is yours to tune — but a good starting point is c = K.
+    </p>
+    <p style="color:var(--fog);line-height:1.8;margin-bottom:16px;">
+      <strong>Starter Template:</strong>
     </p>
     <div class="code-hint">import numpy as np
 
 class BanditAgent:
-    def __init__(self, n_arms):
+
+    def __init__(self, n_arms: int):
         self.n_arms = n_arms
         self.counts = np.zeros(n_arms)
         self.values = np.zeros(n_arms)
-        self.epsilon = 1.0       # start: fully exploratory
-        self.decay = 0.995       # epsilon shrinks each round
-        self.min_eps = 0.01      # exploration floor
+        self.c      = # YOUR DECAY CONSTANT HERE  (try c = K)
+        self.t      = 0
 
-    def select_arm(self):
-        if np.random.random() < self.epsilon:
-            # Exploration: pick random arm
-            return np.random.randint(self.n_arms)
-        # Exploitation: pick best arm
-        return int(np.argmax(self.values))
+    def select_arm(self) -> int:
+        self.t += 1
+        # Step 1: compute epsilon_t = min(1.0, c / sqrt(t))
+        # Step 2: with prob epsilon_t  → explore (random arm)
+        # Step 3: with prob 1-epsilon_t → exploit (argmax)
+        raise NotImplementedError
 
-    def update(self, arm, reward):
-        self.counts[arm] += 1
-        n = self.counts[arm]
-        self.values[arm] += (reward - self.values[arm]) / n
-        # Decay epsilon toward minimum floor
-        self.epsilon = max(self.min_eps, self.epsilon * self.decay)
+    def update(self, arm: int, reward: float):
+        # Welford's incremental mean update (same as ETC)
+        raise NotImplementedError
 </div>
   </div>
 
@@ -726,16 +744,7 @@ class BanditAgent:
   </div>
 </section>
 
-<script>
-function toggleTheory(questId) {
-  const el = document.getElementById(questId + '-theory');
-  if (el.style.display === 'none') {
-    el.style.display = 'block';
-  } else {
-    el.style.display = 'none';
-  }
-}
-</script>
+<script src="/static/exercises.js"></script>
 
 </main>
 </div><!-- /wrapper -->

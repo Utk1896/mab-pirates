@@ -80,18 +80,19 @@ def save_run_result(run_id, upload_id, student_name, student_id, total_gold, reg
 
 
 def get_leaderboard():
-    """Best run per student, ranked by total_gold."""
+    """Best run per student, ranked by total_gold and earliest submission."""
     conn = get_db()
     rows = conn.execute("""
         SELECT student_name, student_id,
                MAX(total_gold) as best_gold,
                MIN(regret) as best_regret,
                COUNT(*) as total_runs,
-               MAX(ran_at) as last_run
+               MAX(ran_at) as last_run,
+               MIN(ran_at) as first_success
         FROM runs
         WHERE status = 'success'
         GROUP BY student_id
-        ORDER BY best_gold DESC
+        ORDER BY best_gold DESC, first_success ASC
     """).fetchall()
     conn.close()
     return [dict(r) for r in rows]

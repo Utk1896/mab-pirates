@@ -1,0 +1,87 @@
+/* Interactive Bandit Exercise Styles — Pirate Theme */
+/* All classes prefixed with ex- to avoid conflicts */
+
+.ex-card{background:rgba(13,20,38,0.6);border:1px solid rgba(212,160,23,0.15);border-radius:4px;margin-bottom:12px;overflow:hidden}
+.ex-card-hd{padding:11px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(212,160,23,0.15);background:rgba(10,14,26,0.5)}
+.ex-badge{width:22px;height:22px;border-radius:6px;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ex-badge-etc{background:rgba(65,36,2,0.8);color:#FAC775}
+.ex-badge-eg{background:rgba(4,52,44,0.8);color:#9FE1CB}
+.ex-card-title{font-size:13px;font-weight:500;color:#c8b89a}
+.ex-card-body{padding:14px}
+.ex-instr{font-size:12.5px;color:#b87333;margin-bottom:12px;line-height:1.5}
+
+pre.ex-code{font-family:'Courier New',monospace;font-size:12px;line-height:1.8;background:rgba(10,14,26,0.9);border:1px solid rgba(212,160,23,0.15);border-radius:4px;padding:12px 14px;overflow-x:auto;white-space:pre;tab-size:4;color:#c8b89a}
+.ex-sk{color:#FAC775}.ex-se{color:#85B7EB}.ex-sf{color:#5DCAA5}.ex-sc{color:#5F5E5A;font-style:italic}.ex-ss{color:#97C459}.ex-sn{color:#F09595}.ex-sl{color:#AFA9EC}
+
+.ex-blank{display:inline-block;min-width:82px;height:20px;background:rgba(10,14,26,0.6);border:1.5px dashed rgba(212,160,23,0.3);border-radius:4px;vertical-align:middle;cursor:pointer;text-align:center;padding:0 5px;font-family:'Courier New',monospace;font-size:11px;color:#b87333;transition:all .12s;white-space:nowrap;line-height:20px}
+.ex-blank.ready-etc{border-color:#EF9F27;box-shadow:0 0 0 2px rgba(65,36,2,0.8)}
+.ex-blank.ready-eg{border-color:#5DCAA5;box-shadow:0 0 0 2px rgba(4,52,44,0.8)}
+.ex-blank.filled{background:rgba(10,14,26,0.8);border-style:solid;border-color:rgba(212,160,23,0.3);color:#c8b89a}
+.ex-blank.ok{background:rgba(23,52,4,0.8);border-color:#C0DD97;border-style:solid;color:#C0DD97}
+.ex-blank.er{background:rgba(80,19,19,0.8);border-color:#F7C1C1;border-style:solid;color:#F7C1C1}
+
+.ex-tok-bank{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding:10px;background:rgba(10,14,26,0.5);border-radius:4px;border:1px solid rgba(212,160,23,0.1)}
+.ex-tok{font-family:'Courier New',monospace;font-size:11.5px;padding:4px 9px;border-radius:5px;cursor:pointer;border:1px solid rgba(212,160,23,0.2);background:rgba(13,20,38,0.8);color:#c8b89a;transition:all .12s;user-select:none}
+.ex-tok:hover:not(.ex-tok-used){border-color:#d4a017;background:rgba(10,14,26,0.6)}
+.ex-tok.sel-etc{border-color:#FAC775;background:rgba(65,36,2,0.8);color:#FAC775;border-width:1.5px}
+.ex-tok.sel-eg{border-color:#9FE1CB;background:rgba(4,52,44,0.8);color:#9FE1CB;border-width:1.5px}
+.ex-tok-used{opacity:.3;pointer-events:none}
+
+.ex-ord-list{display:flex;flex-direction:column;gap:7px}
+.ex-ord-item{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(10,14,26,0.5);border:1px solid rgba(212,160,23,0.15);border-radius:4px;cursor:grab;user-select:none;transition:border-color .12s;font-size:13px;color:#c8b89a}
+.ex-ord-item:active{cursor:grabbing}
+.ex-ord-item.dragging{opacity:.35;border-style:dashed}
+.ex-ord-item.over{border-color:#d4a017;background:rgba(13,20,38,0.8)}
+.ex-ord-num{width:20px;height:20px;border-radius:4px;background:rgba(13,20,38,0.8);border:1px solid rgba(212,160,23,0.15);color:#b87333;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ex-ord-item.pos-ok .ex-ord-num{background:rgba(23,52,4,0.8);border-color:#C0DD97;color:#C0DD97}
+.ex-ord-item.pos-er .ex-ord-num{background:rgba(80,19,19,0.8);border-color:#F7C1C1;color:#F7C1C1}
+.ex-grip{color:#b87333;font-size:14px;flex-shrink:0;line-height:1}
+
+.ex-match-rows{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.ex-match-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ex-match-code{font-family:'Courier New',monospace;font-size:11px;padding:5px 8px;background:rgba(10,14,26,0.9);border:1px solid rgba(212,160,23,0.15);border-radius:5px;color:#b87333;flex:1;min-width:160px;white-space:nowrap}
+.ex-arr{color:#b87333;font-size:13px;flex-shrink:0}
+.ex-mslot{min-width:150px;height:28px;border:1.5px dashed rgba(212,160,23,0.3);border-radius:5px;cursor:pointer;padding:0 8px;font-size:12px;color:#b87333;display:flex;align-items:center;background:rgba(10,14,26,0.5);transition:all .12s}
+.ex-mslot.filled{background:rgba(10,14,26,0.8);border-style:solid;border-color:rgba(212,160,23,0.3);color:#c8b89a}
+.ex-mslot.ready-etc{border-color:#EF9F27;box-shadow:0 0 0 2px rgba(65,36,2,0.8)}
+.ex-mslot.ready-eg{border-color:#5DCAA5;box-shadow:0 0 0 2px rgba(4,52,44,0.8)}
+.ex-mslot.ok{background:rgba(23,52,4,0.8);border-color:#C0DD97;border-style:solid;color:#C0DD97}
+.ex-mslot.er{background:rgba(80,19,19,0.8);border-color:#F7C1C1;border-style:solid;color:#F7C1C1}
+.ex-desc-pool{display:flex;flex-direction:column;gap:6px;padding:10px;background:rgba(10,14,26,0.5);border-radius:4px;border:1px solid rgba(212,160,23,0.1)}
+.ex-desc-chip{padding:7px 10px;border:1px solid rgba(212,160,23,0.2);border-radius:6px;cursor:pointer;font-size:12.5px;background:rgba(13,20,38,0.8);color:#c8b89a;transition:all .12s;user-select:none;line-height:1.4}
+.ex-desc-chip:hover:not(.ex-chip-used){border-color:#d4a017}
+.ex-desc-chip.sel-etc{border-color:#FAC775;border-width:1.5px;background:rgba(65,36,2,0.8);color:#FAC775}
+.ex-desc-chip.sel-eg{border-color:#9FE1CB;border-width:1.5px;background:rgba(4,52,44,0.8);color:#9FE1CB}
+.ex-chip-used{opacity:.3;pointer-events:none}
+
+.ex-mcq-q{font-size:13.5px;font-weight:500;margin-bottom:9px;line-height:1.5;color:#c8b89a}
+.ex-mcq-opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.ex-opt{display:flex;align-items:flex-start;gap:9px;padding:8px 12px;border:1px solid rgba(212,160,23,0.15);border-radius:4px;cursor:pointer;background:rgba(10,14,26,0.5);font-size:13px;color:#c8b89a;transition:all .12s;line-height:1.4}
+.ex-opt:hover:not(.ex-opt-dis){border-color:#d4a017;background:rgba(13,20,38,0.8)}
+.ex-opt.sel-etc{border-color:#FAC775;background:rgba(65,36,2,0.8);color:#FAC775}
+.ex-opt.sel-eg{border-color:#9FE1CB;background:rgba(4,52,44,0.8);color:#9FE1CB}
+.ex-opt.ok{border-color:#C0DD97;background:rgba(23,52,4,0.8);color:#C0DD97}
+.ex-opt.er{border-color:#F7C1C1;background:rgba(80,19,19,0.8);color:#F7C1C1}
+.ex-opt.ex-opt-dis{cursor:default}
+.ex-opt-ltr{width:20px;height:20px;border-radius:4px;border:1px solid rgba(212,160,23,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;color:#b87333}
+
+.ex-chk-btn{margin-top:12px;padding:7px 16px;border:1px solid rgba(212,160,23,0.3);border-radius:4px;font-family:'Crimson Pro',serif;font-size:12.5px;font-weight:500;cursor:pointer;background:rgba(10,14,26,0.5);color:#c8b89a;transition:all .12s}
+.ex-chk-btn:hover{background:rgba(13,20,38,0.8);border-color:#d4a017}
+.ex-chk-btn:active{transform:scale(.97)}
+.ex-rst-btn{margin-top:12px;margin-left:6px;padding:7px 14px;border:1px solid rgba(212,160,23,0.1);border-radius:4px;font-family:'Crimson Pro',serif;font-size:12px;cursor:pointer;background:none;color:#b87333;transition:all .12s}
+.ex-rst-btn:hover{color:#c8b89a;border-color:rgba(212,160,23,0.3)}
+
+.ex-fb{margin-top:10px;padding:9px 12px;border-radius:4px;font-size:12.5px;font-weight:400;line-height:1.4;display:none}
+.ex-fb.ok{background:rgba(23,52,4,0.8);color:#C0DD97;border:1px solid #C0DD97;display:block}
+.ex-fb.er{background:rgba(80,19,19,0.8);color:#F7C1C1;border:1px solid #F7C1C1;display:block}
+
+.ex-prog-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.ex-prog-chip{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:400;border:1px solid rgba(212,160,23,0.15);color:#b87333;background:rgba(10,14,26,0.5)}
+.ex-prog-chip.done-etc{background:rgba(65,36,2,0.8);border-color:#FAC775;color:#FAC775}
+.ex-prog-chip.done-eg{background:rgba(4,52,44,0.8);border-color:#9FE1CB;color:#9FE1CB}
+
+.ex-ref-toggle{width:100%;padding:9px 14px;background:none;border:none;font-family:'Crimson Pro',serif;font-size:12.5px;color:#b87333;cursor:pointer;text-align:left;display:flex;align-items:center;gap:6px;transition:color .12s}
+.ex-ref-toggle:hover{color:#c8b89a}
+.ex-ref-body{overflow:hidden;max-height:0;transition:max-height .3s ease}
+.ex-ref-body.open{max-height:600px}
+.ex-pool-label{font-size:12px;color:#b87333;margin-bottom:6px}
