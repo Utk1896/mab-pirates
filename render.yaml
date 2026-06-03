@@ -1,17 +1,12 @@
 # render.yaml — MAB Pirates deployment blueprint
-# Connect this repo at https://dashboard.render.com/blueprints
 
 services:
   - type: web
     name: mab-pirates
     runtime: docker
     dockerfilePath: ./Dockerfile
-    region: singapore  # closest free region to India
+    region: singapore
     plan: free
     envVars:
       - key: MENTOR_PASSWORD
-        value: pirates2025   # change this!
-    disk:
-      name: pirates-data
-      mountPath: /app
-      sizeGB: 1
+        value: pirates2025
