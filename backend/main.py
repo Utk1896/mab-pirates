@@ -53,9 +53,10 @@ app.add_middleware(
 )
 
 BASE_DIR = Path(__file__).parent.parent
-UPLOADS_DIR = BASE_DIR / "uploads"
+_DATA_DIR = Path("/data") if Path("/data").exists() else BASE_DIR
+UPLOADS_DIR = _DATA_DIR / "uploads"
 FRONTEND_DIR = BASE_DIR / "frontend"
-UPLOADS_DIR.mkdir(exist_ok=True)
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 MENTOR_PASSWORD = os.environ.get("MENTOR_PASSWORD", "pirates2025")
 HORIZON = 1000  # number of pulls per run

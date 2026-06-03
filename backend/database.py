@@ -8,7 +8,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-DB_PATH = Path(__file__).parent.parent / "pirates.db"
+# Use /data volume on Fly.io (persistent), fall back to project root for local dev
+_DATA_DIR = Path("/data") if Path("/data").exists() else Path(__file__).parent.parent
+DB_PATH = _DATA_DIR / "pirates.db"
 
 
 def get_db():

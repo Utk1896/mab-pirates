@@ -1,0 +1,10 @@
+__pycache__/
+backend/__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+*.db
+uploads/
+*.egg-info/
+.env
